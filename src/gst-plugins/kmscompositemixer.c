@@ -161,7 +161,7 @@ kms_composite_mixer_recalculate_sizes (gpointer data)
 {
   KmsCompositeMixer *self = KMS_COMPOSITE_MIXER (data);
   GstCaps *filtercaps;
-  gint width, height, top, left, counter, n_columns, n_rows;
+  gint width, height, top, left, counter;
   GList *l;
   GList *values = g_hash_table_get_values (self->priv->ports);
 
@@ -172,13 +172,8 @@ kms_composite_mixer_recalculate_sizes (gpointer data)
   counter = 0;
   values = g_list_sort (values, compare_port_data);
 
-  n_columns = (gint) ceil (sqrt (self->priv->n_elems));
-  n_rows = (gint) ceil ((float) self->priv->n_elems / (float) n_columns);
-
-  GST_DEBUG_OBJECT (self, "columns %d rows %d", n_columns, n_rows);
-
-  width = self->priv->output_width / n_columns;
-  height = self->priv->output_height / n_rows;
+  width = self->priv->output_width / 3;
+  height = self->priv->output_height / 3;
 
   for (l = values; l != NULL; l = l->next) {
     KmsCompositeMixerData *port_data = l->data;
@@ -194,8 +189,8 @@ kms_composite_mixer_recalculate_sizes (gpointer data)
     g_object_set (port_data->capsfilter, "caps", filtercaps, NULL);
     gst_caps_unref (filtercaps);
 
-    top = ((counter / n_columns) * height);
-    left = ((counter % n_columns) * width);
+    top = ((counter / 3) * height);
+    left = ((counter % 3) * width);
 
     g_object_set (port_data->video_mixer_pad, "xpos", left, "ypos", top,
         "alpha", 1.0, NULL);
